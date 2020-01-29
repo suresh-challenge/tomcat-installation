@@ -1,6 +1,6 @@
 ---
  - name: Installing Tomcat web server, deploying an web app and configuring selfsigned cert.
-   hosts: [serverIP] 
+   hosts: serverIP 
    gather_facts: true
   
    tasks:

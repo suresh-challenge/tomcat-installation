@@ -113,3 +113,17 @@
 			"Value": {
 				"Fn::GetAtt": [
 					"EC2Instance",
+					 "AvailabilityZone"
+				]
+			}
+		},
+		"InstanceId": {
+			"Description": "The Instance  ID",
+			"Value": {
+				"Ref":"EC2Instance"
+			}
+		}
+	}
+}
+
+
