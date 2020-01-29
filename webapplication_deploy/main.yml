@@ -1,0 +1,18 @@
+---
+ - name: Installing Tomcat web server, deploying an web app and configuring selfsigned cert.
+   hosts: [serverIP] 
+   gather_facts: true
+  
+   tasks:
+   - name: Gathering localhost IP address
+     debug: var=ansible_default_ipv4.address
+     register: t1
+
+   - name: Set ip to a variable
+     set_fact:
+        localhost_ip_address: "{{ t1['ansible_default_ipv4.address'] }}" 
+
+   roles:
+     - { role: tomcat_installation }
+     - { role: webapp-deployment }
+     - { role: selfsignedcert }

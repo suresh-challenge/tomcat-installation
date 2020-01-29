@@ -1,0 +1,12 @@
+- name: Creating a folder for webpage
+  file:
+     path: /opt/tomcat/webapps/test
+     state: directory
+     mode: 0755
+     owner: tomcat
+     group: root
+ 
+- name: Deploying a static web page
+  template:
+     src: index.html
+     dest: /opt/tomcat/webapps/test

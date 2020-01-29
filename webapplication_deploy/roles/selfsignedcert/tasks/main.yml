@@ -1,0 +1,33 @@
+- name: Installing pexpect module
+  pip:
+     name: pexpect
+     state: present
+
+- name: Generating self signed cert(keystore) with java
+  expect:
+         command: "/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.232.b09-0.el7_7.x86_64/jre/bin/keytool -genkey -alias {{ localhost_ip_address }}  -keyalg RSA -keystore /opt/tomcat/conf/{{ localhost_ip_address }}.keystore"
+         responses:
+              'Enter keystore password:': 'changeit'
+              'Re-enter new password': 'changeit'
+              What is your first and last name? *: 'Suresh G'  
+              What is the name of your organizational unit? *: 'IT'
+              What is the name of your organization? *: 'Google'
+              What is the name of your City or Locality? *: 'NewYork'
+              What is the name of your State or Province? *: 'NewYork'
+              What is the two-letter country code for this unit? *: 'US'
+              Is *: 'yes'
+              Enter key password *: "\n"
+
+- name: Editing server.xml file to use ssl
+  blockinfile:
+             path: /opt/tomcat/conf/server.xml
+             insertafter: '<Service name="Catalina">'
+             marker: "\n<!-- {mark} ANSIBLE MANAGED BLOCK insertion  -->\n"
+             block: |
+                     <Connector
+                           protocol="org.apache.coyote.http11.Http11NioProtocol"
+                           port="8443" maxThreads="200"
+                           scheme="https" secure="true" SSLEnabled="true"
+                           keystoreFile="/opt/tomcat/conf/{{ localhost_ip_address }}.keystore" keystorePass="changeit"
+                           clientAuth="false" sslProtocol="TLS"/>
+

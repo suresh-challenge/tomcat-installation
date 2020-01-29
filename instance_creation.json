@@ -1,0 +1,115 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Description": "Ec2 Instance creation Template",
+	"Parameters": {
+		"AmiID": {
+			"Type": "String"
+		},
+		"InstanceType": {
+			"Type": "String"
+		},
+		"SubnetID": {
+			"Type": "String"
+		},
+		"IamInstanceProfile": {
+			"Type": "String"
+		},
+		"SecurityGroups": {
+			"Type": "String"
+		},
+		"VpcId": {
+			"Type": "String"
+		},
+        	"EbsVol": {
+        		"Type": "String"
+        	},
+        	"EbsVolsdg": {
+        		"Type": "String"
+       		},
+		"InstanceName": {
+           		"Type": "String"
+       		}
+	},
+  
+	"Resources": {
+	    "EC2Instance": {
+			"Type": "AWS::EC2::Instance",
+			"Properties": {
+				"InstanceType": {
+					"Ref": "InstanceType"
+				},
+				"IamInstanceProfile": {
+					"Ref": "IamInstanceProfile"
+				},
+				"ImageId": {
+					"Ref": "AmiID"
+				},
+				"SubnetId": {
+					"Ref": "SubnetID"
+				},
+				"SecurityGroupIds": [
+					{
+						"Ref": "SecurityGroups"
+					}
+				],
+				"BlockDeviceMappings": [
+					{
+						"DeviceName": "/dev/sdf",
+						"Ebs": {
+						    "DeleteOnTermination": "true",
+                            "VolumeSize" : {"Ref": "EbsVol"}
+						}
+					},
+					{
+						"DeviceName": "/dev/sdg",
+						"Ebs": {
+							"DeleteOnTermination": "true",
+                            "VolumeSize" : {"Ref": "EbsVolsdg"}
+						}
+					}
+					
+				],
+				"Tags": [
+					{
+						"Key": "OS",
+						"Value": "linux"
+					},
+					{
+						"Key": "Name",
+						"Value": {
+							"Fn::Join": [
+								"-",
+								[
+									{
+										"Ref": "AWS::StackName"
+									},
+									"App"
+								]
+							]
+						}
+					},
+					{
+						"Key": "Name",
+						"Value": {
+						"Ref": "InstanceName"
+						}
+					}
+				]
+			}
+		}
+	},
+	"Outputs": {
+		"PrivateIP": {
+			"Description": "IP of EC2Instance",
+			"Value": {
+				"Fn::GetAtt": [
+					"EC2Instance",
+					"PrivateIp"
+				]
+			}
+		},
+		"AZ": {
+			"Description": "Availability Zone of the newly created EC2 instance",
+			"Value": {
+				"Fn::GetAtt": [
+					"EC2Instance",
